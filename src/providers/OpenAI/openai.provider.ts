@@ -1,10 +1,13 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, UseInterceptors, Inject } from '@nestjs/common';
 import { OpenAI } from 'openai';
 import { LLMProvider } from '../abstract.provider';
+import { CircuitBreakerInterceptor } from '@/infra/interceptors/circuitBreaker.intercepter';
 import { Queue } from 'bull';
+import Logger from '@/services/utils/logger.service';
 
 @Injectable()
 export class OpenAIProvider extends LLMProvider<any> {
+  private readonly logger = new Logger('OpenAIProvider');
   private readonly openai: OpenAI;
 
   constructor(@Inject('SOCIAL_MEDIA_AGENT_DLQ') private readonly deadLetterQ: Queue) {
@@ -12,6 +15,7 @@ export class OpenAIProvider extends LLMProvider<any> {
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || 'xyz' });
   }
 
+  @UseInterceptors(CircuitBreakerInterceptor)
   async processPrompt(prompt: string, username: string): Promise<any> {
     try {
       // const response = await this.openai.chat.completions.create({
@@ -50,6 +54,7 @@ export class OpenAIProvider extends LLMProvider<any> {
         }
       };
     } catch (error: any) {
+      this.logger.error(`OpenAI API error: ${error.message}`, {});
       await this.fallback({ username, data: {} }, error)
       throw error;
     }

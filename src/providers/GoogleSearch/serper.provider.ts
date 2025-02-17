@@ -1,10 +1,13 @@
 import { Injectable, UseInterceptors, Inject } from '@nestjs/common';
 import axios from 'axios';
+import Logger from '../../services/utils/logger.service';
 import { SearchProvider } from '../abstract.provider';
+import { CircuitBreakerInterceptor } from '@/infra/interceptors/circuitBreaker.intercepter';
 import { Queue } from 'bull';
 
 @Injectable()
 export class SerperProvider extends SearchProvider<any> {
+  private readonly logger = new Logger('SerperProvider');
   private readonly apiKey: string;
   private readonly apiUrl: string;
   constructor(@Inject('SOCIAL_MEDIA_AGENT_DLQ') private readonly deadLetterQ: Queue) {
@@ -13,6 +16,7 @@ export class SerperProvider extends SearchProvider<any> {
     this.apiKey = process.env.SERPER_API_KEY || 'xxx';
   }
 
+  @UseInterceptors(CircuitBreakerInterceptor)
   async processSearch(payload: any): Promise<string> {
     try {
       const response = await axios.post(
@@ -28,6 +32,7 @@ export class SerperProvider extends SearchProvider<any> {
       const result = JSON.stringify(response.data);
       return result;
     } catch (error: any) {
+      this.logger.error(`Serper.dev API error: ${error.message}`, {});
      await this.fallback({ username: payload.username, data: payload.data }, error)
      throw error;
     }

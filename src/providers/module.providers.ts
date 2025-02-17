@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SerperProvider } from './GoogleSearch/serper.provider';
 import { OpenAIProvider } from './OpenAI/openai.provider';
+import { socialMediaAgentDLQ } from '@/infra/queue/bullMQ.queues';
 
 @Module({
   imports: [
@@ -13,6 +14,10 @@ import { OpenAIProvider } from './OpenAI/openai.provider';
       {
         provide: 'LLM_PROVIDER',
         useClass: OpenAIProvider,
+      },
+      {
+        provide: 'SOCIAL_MEDIA_AGENT_DLQ',
+        useValue: socialMediaAgentDLQ,
       },
   ],
   exports: [
