@@ -13,7 +13,7 @@ export class SocialAgentController {
   @ApiBody({ type: ProcessAnalysisDto })
   @ApiResponse({ status: 200, description: 'Successfully processed request' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async analye(
+  async analyze(
     @Body() payload: ProcessAnalysisDto
   ): Promise<{ username: string; data: any }> {
     return this.socialMediaAgentService.processRequest(payload, payload.clientId);
