@@ -24,12 +24,12 @@ interface CircuitBreakerOptions {
 
 // CircuitBreaker class extending EventEmitter to handle events
 export class CircuitBreaker extends EventEmitter {
-  private state = CircuitBreakerState.Closed; // Initial state is Closed
-  private failureCount = 0; // Count of consecutive failures
-  private successCount = 0; // Count of consecutive successes
-  private lastError: Error; // The last error encountered
-  private nextAttempt: number; // Timestamp for the next attempt when in Open state
-  private options: CircuitBreakerOptions; // Configuration options
+  private state = CircuitBreakerState.Closed;
+  private failureCount = 0;
+  private successCount = 0;
+  private lastError: Error;
+  private nextAttempt: number;
+  private options: CircuitBreakerOptions;
 
   // Constructor to initialize the CircuitBreaker with options
   constructor(options: CircuitBreakerOptions = { fallback: () => new Observable<any>}) {

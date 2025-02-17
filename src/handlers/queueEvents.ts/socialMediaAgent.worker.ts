@@ -46,7 +46,6 @@ export class SocialMediaAgentWorker extends Agent {
     .join('\n') || 'No search results found.';
 
 
-    // Step 2: Generate a response using the LLM provider
     const prompt = `Analyze the following search results and extract information about social media platforms, 
     follower counts, likes, or posts. Provide the result in JSON format where the keys are the 
     platform names and the values are their metrics:\n\n${snippets}`;
