@@ -29,7 +29,7 @@ export class SocialMediaAgentWorker extends Agent {
 
   private setupWorkers() {
     this.socialMediaAgentQueue.process('processSocialMediaEvent', this.processSocialMediaEvent.bind(this));
-    this.socialMediaAgentDlq.process('processFailedOpenAIRequest', this.processFailedOpenAIRequest.bind(this));
+    this.socialMediaAgentDlq.process('processFailedRequest', this.processFailedRequest.bind(this));
   }
 
   async processSocialMediaEvent(job: Job<any>): Promise<void> {
@@ -61,7 +61,7 @@ export class SocialMediaAgentWorker extends Agent {
     }
   }
 
-  async processFailedOpenAIRequest(job: Job<any>): Promise<void> {
+  async processFailedRequest(job: Job<any>): Promise<void> {
     // - Report using cloudwatch alarms
     // - Reprocess data is needed
     return;

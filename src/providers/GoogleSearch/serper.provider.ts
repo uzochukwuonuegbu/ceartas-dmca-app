@@ -41,7 +41,7 @@ export class SerperProvider extends SearchProvider<any> {
   async fallback(payload: { username: string; data: any }, error: Error): Promise<string> {
     try {
       // Push failed request to BullMQ for reprocessing
-      await this.deadLetterQ.add('processFailedOpenAIRequest', {
+      await this.deadLetterQ.add('processFailedRequest', {
         payload,
         error: error.message,
         timestamp: Date.now(),
